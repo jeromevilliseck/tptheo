@@ -1,5 +1,5 @@
 <template>
-    <div id="toto">
+    <div>
         <ul>
             <input v-model="message" type="text"/>
             <li :key="item.library.rcr" v-for="item in itemFilter"> <!-- Attention c'est désormais obligatoire de rajouter un attribut :key pour attribuer un identifiant unique à chaque élement li-->
@@ -12,18 +12,25 @@
 </template>
 
 <script>
-    import axios from "axios"; //L'import des components dit système (equivalent à une librairie système java) se fait uniquement npm install [le nom de la library]
-    //Si npm install [nom de la library] --safe -dev
-    import etablissement from "./etablissement.vue"; //[1] Importer le component enfant avec son chemin : ./ si dans le niveau courant; @ si construction du chemin à parti du dossier src
+    import axios from "axios";
+    //L'import des components dit système (equivalent à une librairie système java, ceux qui n'ont pas ete cres par le dev)
+    //se fait uniquement npm install [le nom de la library]
+    //[commande] npm install [nom de la library] --safe -dev
+
+    import etablissement from "./etablissement.vue";
+    //[1] Importer le component enfant avec son chemin :
+    // ./ si dans le niveau courant;
+    // @ si construction du chemin à parti du dossier src
 
     export default {
-        name: "biblioList", //Le nom choisi à l'export du component
-        components: { //[2] Les components importés par ce component que ce dernier va exploiter à travers des balises (= les components enfants de ce component)
-            etablissement
+        name: "biblioList", //nom public du composant
+        components: {
+            etablissement //[2] Composants qui constituent le composant bibliolist
         },
-        data() { //les membres private de la classe bibliolist
+        data() { //membres privés du composant en cours
             return {
-                items: []
+                items: [],
+                message: ""
             }
         },
         methods: {
@@ -33,7 +40,7 @@
                     url: "https://www.idref.fr/services/iln2rcr/5&format=text/json"
                 }).then(
                     result => {
-                        this.items = result.data.sudoc.query.result;
+                        this.items = result.data.sudoc.query.result; //[affectation] impacte le membre privé items
                     },
                     error => {
                         console.error(error); //equivalent à un syso, interdit en java
@@ -42,12 +49,14 @@
             }
         },
         computed: {
-            itemFilter(){ //La fonction est vue comme un membre dans l'utilisation des templates
-                this.items.filter() //traitement
+            itemFilter() { //La fonction est vue comme un membre dans l'utilisation des templates
+                return this.items
             }
         },
-        created() { //Les méthodes internes à la classe qui s'appellent automatiquement au moment de la création du component (voir le diagramme lifecycle) : au chargement de la page la méthode sera appelée automatiquement
-            this.getList()
+        created: function() {
+            //Les méthodes internes à la classe qui s'appellent automatiquement au moment de la création du component
+            // (voir le diagramme lifecycle) : au chargement de la page la méthode sera appelée automatiquement
+            this.getList() //appelle automatiquement this.getList() au chargement de la page
         }
     }
 
