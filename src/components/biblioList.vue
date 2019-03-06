@@ -1,8 +1,8 @@
 <template>
     <div>
         <ul>
-            <input v-model="message" type="text"/>
-            <li :key="item.library.rcr" v-for="item in itemFilter"> <!-- Attention c'est désormais obligatoire de rajouter un attribut :key pour attribuer un identifiant unique à chaque élement li-->
+            <input v-model="query" placeholder="Entrez votre recherche" type="text"/> <!--[V-model][etape-1] mettre l'attribut v-model avec une valeur  qui sera le nom de la future variable interne-->
+            <li :key="item.library.rcr" v-for="item in filtredEtabs"> <!-- Attention c'est désormais obligatoire de rajouter un attribut :key pour attribuer un identifiant unique à chaque élement li-->
                 <etablissement :rcr="item.library.rcr" :nom="item.library.shortname"></etablissement>
                 <!--[3] Utilisation de la balise du component etablissement qui doit prendre le même nom que dans import [nom] du même fichier-->
                 {{ item.rcr }}
@@ -10,6 +10,8 @@
         </ul>
     </div>
 </template>
+
+<!--Pour mieux comprendre, voir le component comme une classe-->
 
 <script>
     import axios from "axios";
@@ -30,7 +32,8 @@
         data() { //membres privés du composant en cours
             return {
                 items: [],
-                message: ""
+                message: "",
+                query: "", //[V-model][etape-2] déclarer la variable de l'attribut html en membre privé du component biblioList
             }
         },
         methods: {
@@ -51,6 +54,9 @@
         computed: {
             itemFilter() { //La fonction est vue comme un membre dans l'utilisation des templates
                 return this.items
+            },
+            filtredEtabs() { //[V-model][etape-3] construire la fonction qui va permettre de filtrer les resultats
+                return this.items.filter(item => item.library.shortname.toLowerCase().includes(this.query.toLowerCase()))
             }
         },
         created: function() {
@@ -61,7 +67,3 @@
     }
 
 </script>
-
-<style scoped>
-
-</style>
